@@ -1,6 +1,8 @@
 # sHE beLIEveD
 I'ma shit in ur ass
 
-Alright so read up I'll be posting documentation soon, telling you how the project works
+Try to understanad code, ask me if you don't understand anything
 
-You guys need to make a folder called "StructureImage cache" in the same directory as this program
+YRE-SETUP REQUIREMENTS: PLEASE READ
+1) Create a new folder named "StructureImage cache" in the same directory of this program
+2) Install python-mysql-connector module
