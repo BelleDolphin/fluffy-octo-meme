@@ -12,7 +12,6 @@ import threading
 import mysql.connector
 
 '''this program might be stable or unstable.....who cares
-
 PRE-SETUP REQUIREMENTS: PLEASE READ
 1) Create a new folder named "StructureImage cache" in the same directory of this program
 2) Install python-mysql-connector module
@@ -47,47 +46,48 @@ def is_connected(): # Check if we are connected to the internet
     global online
     global offline
     try:
-        socket.create_connection(("www.google.com", 80)) 
+        socket.create_connection(("www.google.com", 80))  # Ping Google server, if we get response we are online
         state = "Online"
         stat  = online
 
-    except OSError:
+    except OSError: # IF we don't get response, we are offline
         state = "Offline"
         stat  = offline
 
-
-    imagePath2 = PhotoImage(data=stat)
+    # The code below will update the offline image(set as default) to online or offline, depending on connection
+    imagePath2 = PhotoImage(data=stat) 
     widgetf2 = Label(top,  image=imagePath2,bg="#ffd2ab")
     widgetf2.image=imagePath2
     widgetf2.place(x=0,y=0)
     top.update_idletasks()
     top.after(100, is_connected)
-    
+
+# Once target repository is connected, we initialise the tkinter GUI application    
 tt3 =threading.Event()
 t3=threading.Thread(target=is_connected)
 t3.start()
 
 
-imagePath = PhotoImage(data=emp)
+imagePath = PhotoImage(data=emp) #Emp is the variable for the place where we are placing the chemical structure image
 widgetf = Label(top,  image=imagePath,bd=3,  bg="#3399ff")
 widgetf.place(x=60,y=80)
 
-imagePath1 = PhotoImage(data=logo)
+imagePath1 = PhotoImage(data=logo) # Logo is, well the logo
 widgetf1 = Label(top,  image=imagePath1,bg="#ffd2ab")
 widgetf1.place(x=100,y=3)
 
 
-def molecularweight(CID):
+def molecularweight(CID): #Get Molecular weight from repository
     global gmw
     mwlink="https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/"+CID+"/property/MolecularWeight/txt"
     mwdata=requests.get(mwlink)
-    mw= BeautifulSoup(mwdata.text, "html.parser")
+    mw= BeautifulSoup(mwdata.text, "html.parser") # Google this on your own 
     mw=str(mw).lstrip().rstrip()
     gmw=mw
     compweight2.config(text=mw)
 
     
-def select(comp):
+def select(comp): # Get structures
     img = Image.open("StructureImage cache\\"+comp+".gif")
     tkimage = ImageTk.PhotoImage(img)
     structure = Label(top,image = tkimage,bd=3,bg="#3399ff")
@@ -95,7 +95,7 @@ def select(comp):
     structure.place(x=60,y=80)
     top.update_idletasks()
 
-def save_info(v_srch_name,v_mlclr_name,v_mlclr_frml, v_mlclr_wght):
+def save_info(v_srch_name,v_mlclr_name,v_mlclr_frml, v_mlclr_wght): # Save the 3 data units from repo and our search to a SQL table
     try:
         connection = mysql.connector.connect(host='localhost',
                                  database='divith',
@@ -115,7 +115,7 @@ def save_info(v_srch_name,v_mlclr_name,v_mlclr_frml, v_mlclr_wght):
     connection.commit()
 
             
-def getinfo(event):
+def getinfo(event): # Get dat info and structure
     global gmw
     compound=txt.get()
     basepage = "https://pubchem.ncbi.nlm.nih.gov/compound/"+compound
@@ -157,7 +157,7 @@ def getinfo(event):
     select(compound)
     save_info(compound,compoundname, compoundform,gmw )
     
-def reset():
+def reset(): # Reset the input and output fields
     global emp
     compformula2.config(text="")
     compname2.config(text="")
@@ -169,7 +169,7 @@ def reset():
     widgetf.place(x=60,y=80)
     top.update_idletasks()    
 
-    
+# Below we remove the downloaded chemical structure and replace it with a blank image
 
 refpic=PhotoImage(data=refresh)
 ref=Button(top,image=refpic,bg="#ffd2ab",bd=0,command=reset)
@@ -178,7 +178,7 @@ ref.place(x=0,y=35)
 txt=Entry(top,bd=5,font=("Arial Rounded MT",17),width=23)
 txt.place(x=60,y=400)
 
-
+# Below we just initialise output fields and their headers
 
 compformula1 = Label(top,font=("cooper",17),text="Molecular Formula",bg="#ffd2ab",fg="#cc0066")
 compformula1.place(x=115,y=450)
@@ -202,7 +202,7 @@ compweight2.place(x=60,y=640)
 
 top.bind('<Return>', getinfo)
 
-
+# Defines shape and size of application
 top.configure(background="#ffd2ab")
 top.geometry('430x700')
 top.update()
