@@ -11,19 +11,18 @@ import socket
 import threading
 import mysql.connector
 
-'''this program might be stable or unstable.....who cares
+'''this program might be stable or unstable
 PRE-SETUP REQUIREMENTS: PLEASE READ
-1) Create a new folder named "StructureImageCache" in the same directory of this program
-2) Install python-mysql-connector module
+Install necessary modules
 '''
 
 top=tkinter.Tk()
-top.title("CS Project")
+top.title("ChemistrySearch")
 #global connection
 s='''- structure, chemical names, physical and chemical properties, classification, patents, literature, biological activities, safety/hazards/toxicity information, supplier lists, and more.'''
 ans="y"
 snip1=["Search and explore chemical information in the world's largest freely accessible chemistry database."]
-
+global gmw
 global emp
 # So what you are witnessing below is an image converted into base64-64 format so that we can just store em
 # inside the program!
@@ -99,24 +98,23 @@ def save_info(v_srch_name,v_mlclr_name,v_mlclr_frml, v_mlclr_wght): # Save the 3
     try:
         connection = mysql.connector.connect(host='localhost',
                                  user='root',
-                                 password='1234')
+                                 database='',
+                                 password='')
         if connection.is_connected():
-           db_Info = connection.get_server_info()
-           print("Connected to MySQL database... MySQL Server version on ",db_Info)
+           print("Connected to MySQL database")
            
     except:
-        print ("Error while connecting to MySQL")
+        print ("Error while connecting to MySQL NIGGA")
 
     cur = connection.cursor()
     cur.execute('create database if not exists test;')
     cur.execute('use test;')
-    cur.execute('''create table if not exists chembookHistory
+    cur.execute('''create table if not exists chembookHistory1
     (SearchName varchar(20),
     MolecularName varchar(60),
     MolecularFormula varchar(30),
-    MolecularWeight decimal,
-    timeSearched timestamp default current_timestamp);''')
-    cur.execute('insert into chembookHistory values (%s,%s,%s,%s)',(v_srch_name,v_mlclr_name,v_mlclr_frml, v_mlclr_wght))
+    MolecularWeight decimal);''')
+    cur.execute('insert into chembookHistory1 values ({0},{1},{2},{3})'.format(v_srch_name,v_mlclr_name,v_mlclr_frml, v_mlclr_wght))
     connection.commit()
 
             
@@ -153,7 +151,7 @@ def getinfo(event): # Get dat info and structure
         image = soup.find("meta", {"property": "og:image"})["content"]
 
         try:
-            urllib.request.urlretrieve(image, compound+".gif")#you have to create a new folder named "StructureImageCache" in the same directory of this program
+            urllib.request.urlretrieve(image, compound+".gif")
         except:
             pass
     except:
